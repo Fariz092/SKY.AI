@@ -2,36 +2,116 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chatbot Pelajaran</title>
   <style>
     body {
       background-color: #0f172a;
-      color: white;
-      font-family: sans-serif;
-      text-align: center;
+      color: #f1f5f9;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      margin: 0;
+      height: 100vh;
+    }
+
+    header {
       padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
     }
-    input, button {
-      padding: 10px;
-      margin: 10px;
-      font-size: 16px;
-    }
+
     #chatbox {
-      background: #1e293b;
+      flex: 1;
+      width: 100%;
+      max-width: 600px;
+      overflow-y: auto;
       padding: 20px;
-      border-radius: 10px;
-      margin-top: 20px;
+      box-sizing: border-box;
+    }
+
+    .bubble {
+      max-width: 80%;
+      margin: 10px;
+      padding: 15px;
+      border-radius: 15px;
+      line-height: 1.5;
+    }
+
+    .user {
+      background-color: #2563eb;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+      margin-left: auto;
+    }
+
+    .bot {
+      background-color: #1e293b;
+      color: #f1f5f9;
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+      margin-right: auto;
+    }
+
+    #inputArea {
+      display: flex;
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      box-sizing: border-box;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      background: #1e293b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
     }
   </style>
 </head>
 <body>
-  <h1>Chatbot Pelajaran</h1>
-  <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
-  <button onclick="kirim()">Kirim</button>
+  <header>Chatbot Pelajaran</header>
   <div id="chatbox"></div>
+  <div id="inputArea">
+    <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
+    <button onclick="kirim()">Kirim</button>
+  </div>
 
   <script>
+    const chatbox = document.getElementById("chatbox");
+
+    function tambahBubble(teks, kelas) {
+      const bubble = document.createElement("div");
+      bubble.classList.add("bubble", kelas);
+      bubble.textContent = teks;
+      chatbox.appendChild(bubble);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
     async function kirimChat(pesan) {
       const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
@@ -54,32 +134,39 @@
       });
       const data = await response.json();
       const jawaban = data.choices[0].message.content;
-      tampilkanJawaban(jawaban);
-    }
-
-    function tampilkanJawaban(teks) {
-      const box = document.getElementById("chatbox");
-      box.innerHTML = `<p>${teks}</p>`;
+      tambahBubble(jawaban, "bot");
     }
 
     function kirim() {
       const input = document.getElementById("pesanInput");
-      const pesan = input.value.trim().toLowerCase();
+      const pesan = input.value.trim();
+      if (pesan === "") return;
 
-      if (pesan.includes("tahun berapa")) {
+      tambahBubble(pesan, "user");
+
+      // Jawaban waktu real-time
+      const pesanLower = pesan.toLowerCase();
+      if (pesanLower.includes("tahun berapa")) {
         const tahun = new Date().getFullYear();
-        tampilkanJawaban("Sekarang tahun " + tahun);
+        tambahBubble("Sekarang tahun " + tahun, "bot");
+        input.value = "";
         return;
       }
 
-      if (pesan.includes("jam berapa")) {
+      if (pesanLower.includes("jam berapa")) {
         const jam = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
-        tampilkanJawaban("Sekarang jam " + jam);
+        tambahBubble("Sekarang jam " + jam, "bot");
+        input.value = "";
         return;
       }
 
-      kirimChat(input.value);
+      kirimChat(pesan);
+      input.value = "";
     }
+
+    document.getElementById("pesanInput").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") kirim();
+    });
   </script>
 </body>
 </html>
