@@ -1,128 +1,85 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Chatbot Pelajaran</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SKY.AI - Chatbot Pelajaran</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       background-color: #0f172a;
       color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
+      font-family: sans-serif;
+      text-align: center;
       padding: 20px;
     }
-
-    h1 {
-      color: #38bdf8;
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: none;
     }
-
-    #chat-container {
-      background-color: #1e293b;
+    #chatbox {
+      background: #1e293b;
       padding: 20px;
       border-radius: 10px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      margin-top: 20px;
+      min-height: 200px;
     }
-
-    #chat {
-      height: 400px;
-      overflow-y: auto;
+    #logo {
+      width: 120px;
+      height: auto;
       margin-bottom: 10px;
-      padding-right: 5px;
-    }
-
-    .message {
-      margin: 10px 0;
-    }
-
-    .user {
-      color: #0ea5e9;
-      font-weight: bold;
-    }
-
-    .bot {
-      color: #f1f5f9;
-    }
-
-    input[type="text"] {
-      width: 75%;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-    }
-
-    button {
-      padding: 10px 15px;
-      background-color: #38bdf8;
-      border: none;
-      border-radius: 5px;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0ea5e9;
-      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>Chatbot Pelajaran</h1>
-  <div id="chat-container">
-    <div id="chat"></div>
-    <input type="text" id="user-input" placeholder="Tanya sesuatu..." />
-    <button onclick="sendMessage()">Kirim</button>
-  </div>
-
-  <script>
-    const apiKey = "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";
-
-    async function sendMessage() {
-      const input = document.getElementById("user-input");
-      const message = input.value.trim();
-      if (!message) return;
-
-      appendMessage("Kamu", message, "user");
-      input.value = "";
+  <img src="Proyek Baru 251 [77F9643].png" alt="Logo SKY.AI" id="logo" />
+  <h1>SKY.AI - Chatbot Pelajaran</h1>
+  <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
+  <button onclick="kirim()">Kirim</button>
+  <div id="chatbox"></div>  <script>
+    async function kirimChat(pesan) {
+      const chatbox = document.getElementById("chatbox");
+      chatbox.innerHTML += `<p><i>Mengetik...</i></p>`;
 
       try {
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
             "Authorization": "Bearer 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",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://fariz092.github.io",
+            "X-Title": "SKY.AI"
           },
           body: JSON.stringify({
-            model: "openai/gpt-3.5-turbo",
-            messages: [{ role: "user", content: message }],
-          }),
+            model: "openchat/openchat-7b",
+            messages: [
+              { role: "system", content: "Kamu adalah chatbot pelajaran Indonesia yang ramah dan santai. Jawablah dengan bahasa santai tapi tetap informatif sesuai kurikulum 2025." },
+              { role: "user", content: pesan }
+            ]
+          })
         });
 
         const data = await response.json();
-        if (data.choices && data.choices[0]) {
-          const reply = data.choices[0].message.content;
-          appendMessage("Chatbot", reply, "bot");
+        chatbox.innerHTML = "";
+        if (data.choices && data.choices.length > 0) {
+          chatbox.innerHTML += `<p>${data.choices[0].message.content}</p>`;
         } else {
-          appendMessage("Chatbot", "Maaf, terjadi kesalahan.", "bot");
+          chatbox.innerHTML += `<p>Maaf, terjadi kesalahan.</p>`;
         }
-      } catch (error) {
-        appendMessage("Chatbot", "Maaf, terjadi kesalahan koneksi.", "bot");
+      } catch (err) {
+        chatbox.innerHTML = "";
+        chatbox.innerHTML += `<p>Gagal terhubung ke server. Coba lagi nanti.</p>`;
       }
     }
 
-    function appendMessage(sender, text, className) {
-      const chat = document.getElementById("chat");
-      const messageDiv = document.createElement("div");
-      messageDiv.className = "message " + className;
-      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chat.appendChild(messageDiv);
-      chat.scrollTop = chat.scrollHeight;
+    function kirim() {
+      const input = document.getElementById("pesanInput");
+      const pesan = input.value;
+      if (pesan.trim() !== "") {
+        kirimChat(pesan);
+        input.value = "";
+      }
     }
-  </script>
-</body>
+  </script></body>
 </html>
