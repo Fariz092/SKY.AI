@@ -38,13 +38,16 @@
         headers: {
           "Authorization": "Bearer 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",
           "Content-Type": "application/json",
-          "HTTP-Referer": "https://fariz092.github.io/chatbot-web/.", 
+          "HTTP-Referer": "https://github.com/Fariz092",
           "X-Title": "Chatbot Pelajaran"
         },
         body: JSON.stringify({
           model: "openai/gpt-3.5-turbo",
           messages: [
-            { role: "system", content: "Kamu adalah asisten pelajaran Indonesia." },
+            {
+              role: "system",
+              content: "Kamu adalah asisten belajar untuk pelajar Indonesia. Jawablah pertanyaan berdasarkan Kurikulum Merdeka 2025 dengan bahasa yang sederhana dan jelas. Fokus pada mata pelajaran seperti Matematika, Bahasa Indonesia, IPA, IPS, dan PPKN."
+            },
             { role: "user", content: pesan }
           ]
         })
@@ -61,6 +64,20 @@
 
     function kirim() {
       const input = document.getElementById("pesanInput");
+      const pesan = input.value.trim().toLowerCase();
+
+      if (pesan.includes("tahun berapa")) {
+        const tahun = new Date().getFullYear();
+        tampilkanJawaban("Sekarang tahun " + tahun);
+        return;
+      }
+
+      if (pesan.includes("jam berapa")) {
+        const jam = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
+        tampilkanJawaban("Sekarang jam " + jam);
+        return;
+      }
+
       kirimChat(input.value);
     }
   </script>
