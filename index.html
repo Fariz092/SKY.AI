@@ -2,132 +2,155 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SKY.AI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap" rel="stylesheet">
+  <title>SKY.AI - Chatbot Pelajaran</title>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-color: #000;
-      color: white;
-      font-family: 'Open Sans', sans-serif;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: 'Ubuntu', sans-serif;
+    }
+    body {
+      background-color: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+    header {
       text-align: center;
+      margin-bottom: 30px;
     }
-    .logo-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 40px;
-    }
-    .logo {
+    header img {
+      display: block;
+      margin: 0 auto 10px;
       width: 120px;
       height: auto;
-      border-radius: 20px;
     }
-    h1 {
-      font-size: 2.5rem;
-      margin-top: 20px;
+    header h1 {
+      font-size: 2rem;
     }
-    .chat-container {
-      background: #333;
-      margin: 30px auto;
+    #chatbox {
+      background: #1e293b;
       padding: 20px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 600px;
-      text-align: left;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 20px auto;
       min-height: 200px;
     }
-    #chatBox {
-      white-space: pre-wrap;
+    #chatlog {
+      margin-bottom: 20px;
     }
-    .input-container {
+    .message {
+      margin-bottom: 10px;
+    }
+    .user {
+      text-align: right;
+      color: #38bdf8;
+    }
+    .bot {
+      text-align: left;
+      color: #facc15;
+    }
+    #inputArea {
       display: flex;
       justify-content: center;
-      margin-top: 20px;
+      gap: 10px;
     }
     input[type="text"] {
-      width: 70%;
+      flex: 1;
       padding: 10px;
-      font-size: 1rem;
-      border-radius: 10px;
       border: none;
-      outline: none;
+      border-radius: 5px;
+      font-size: 16px;
     }
     button {
-      padding: 10px 15px;
-      margin-left: 10px;
-      font-size: 1rem;
+      padding: 10px 20px;
       border: none;
-      border-radius: 10px;
-      background-color: #1e90ff;
-      color: white;
+      border-radius: 5px;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
       cursor: pointer;
     }
     .typing {
       font-style: italic;
-      color: #aaa;
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
-  <div class="logo-container">
-    <img src="logo.png" alt="SKY.AI Logo" class="logo" />
-  </div>
-  <h1>SKY.AI</h1>
-  <p>Selamat Datang Di AI Kami. @Fariz092</p>  <div class="chat-container">
-    <div id="chatBox">Ada Yang Bisa Saya Bantu?</div>
+  <header>
+    <img src="Proyek%20Baru%20251%20%5B77F9643%5D.png" alt="Logo" />
+    <h1>SKY.AI - Chatbot Pelajaran</h1>
+  </header>
+  <section id="chatbox">
+    <div id="chatlog"></div>
     <div id="typing" class="typing"></div>
-  </div>  <div class="input-container">
-    <input type="text" id="userInput" placeholder="Tulis pertanyaanmu di sini...">
-    <button onclick="kirimPesan()">Kirim</button>
+  </section>
+  <div id="inputArea">
+    <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
+    <button onclick="kirim()">Kirim</button>
   </div>  <script>
-    const API_KEY = "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"; // Masukkan API key kamu di sini
-
-    async function kirimPesan() {
-      const input = document.getElementById("userInput");
-      const chatBox = document.getElementById("chatBox");
-      const typing = document.getElementById("typing");
-      const pesan = input.value.trim();
-      if (!pesan) return;
-
-      chatBox.innerHTML += `\n\nKamu: ${pesan}`;
-      typing.innerText = "Sky.AI sedang mengetik...";
-      input.value = "";
-
+    async function kirimChat(pesan) {
+      tampilkanPesan(pesan, "user");
+      tampilkanKetik();
       try {
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
+            "Authorization": "Bearer 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",
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`
+            "HTTP-Referer": "https://github.com/Fariz092",
+            "X-Title": "SKY.AI Chatbot"
           },
           body: JSON.stringify({
-            model: "openchat/openchat-7b:free",
+            model: "openchat/openchat-7b",
             messages: [
               {
                 role: "system",
                 content: "Kamu adalah chatbot pelajaran Indonesia yang ramah dan santai. Jawablah dengan bahasa santai tapi tetap informatif sesuai kurikulum 2025."
               },
-              {
-                role: "user",
-                content: pesan
-              }
+              { role: "user", content: pesan }
             ]
           })
         });
 
         const data = await response.json();
-        typing.innerText = "";
+        hapusAnimasiKetik();
         if (data.choices && data.choices.length > 0) {
-          chatBox.innerHTML += `\n\nSky.AI: ${data.choices[0].message.content}`;
+          tampilkanPesan(data.choices[0].message.content, "bot");
         } else {
-          chatBox.innerHTML += "\n\nSky.AI: Maaf, terjadi kesalahan.";
+          tampilkanPesan("Maaf, terjadi kesalahan.", "bot");
         }
       } catch (err) {
-        typing.innerText = "";
-        chatBox.innerHTML += "\n\nSky.AI: Gagal terhubung ke server. Coba lagi nanti.";
+        hapusAnimasiKetik();
+        tampilkanPesan("Gagal terhubung ke server. Coba lagi nanti.", "bot");
+      }
+    }
+
+    function tampilkanPesan(teks, tipe) {
+      const chatlog = document.getElementById("chatlog");
+      const div = document.createElement("div");
+      div.className = `message ${tipe}`;
+      div.textContent = teks;
+      chatlog.appendChild(div);
+      chatlog.scrollTop = chatlog.scrollHeight;
+    }
+
+    function tampilkanKetik() {
+      document.getElementById("typing").innerHTML = "Sedang mengetik...";
+    }
+
+    function hapusAnimasiKetik() {
+      document.getElementById("typing").innerHTML = "";
+    }
+
+    function kirim() {
+      const input = document.getElementById("pesanInput");
+      const pesan = input.value.trim();
+      if (pesan) {
+        kirimChat(pesan);
+        input.value = "";
       }
     }
   </script></body>
