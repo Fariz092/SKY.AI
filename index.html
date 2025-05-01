@@ -2,117 +2,57 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chatbot Pelajaran</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatbot Pelajaran by Fariz</title>
   <style>
     body {
       background-color: #0f172a;
-      color: #f1f5f9;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0;
-      margin: 0;
-      height: 100vh;
-    }
-
-    header {
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
       padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
     }
-
-    #chatbox {
-      flex: 1;
-      width: 100%;
-      max-width: 600px;
-      overflow-y: auto;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    .bubble {
-      max-width: 80%;
+    input, button {
+      padding: 10px;
       margin: 10px;
-      padding: 15px;
-      border-radius: 15px;
-      line-height: 1.5;
-    }
-
-    .user {
-      background-color: #2563eb;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 0;
-      margin-left: auto;
-    }
-
-    .bot {
-      background-color: #1e293b;
-      color: #f1f5f9;
-      align-self: flex-start;
-      border-bottom-left-radius: 0;
-      margin-right: auto;
-    }
-
-    #inputArea {
-      display: flex;
-      width: 100%;
-      max-width: 600px;
-      padding: 10px;
-      box-sizing: border-box;
-      background: #0f172a;
-      border-top: 1px solid #334155;
-    }
-
-    input {
-      flex: 1;
-      padding: 10px;
       font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+    #chatbox {
       background: #1e293b;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      outline: none;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      min-height: 150px;
+      max-height: 400px;
+      overflow-y: auto;
     }
-
-    button {
-      margin-left: 10px;
-      padding: 10px 15px;
-      font-size: 16px;
-      background-color: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #1d4ed8;
-    }
-
-    .typing {
-      font-style: italic;
-      opacity: 0.7;
+    .bubble {
+      background-color: #334155;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px auto;
+      max-width: 90%;
+      text-align: left;
     }
   </style>
 </head>
 <body>
-  <header>Chatbot Pelajaran</header>
+  <h1>Chatbot Pelajaran</h1>
+  <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
+  <button onclick="kirim()">Kirim</button>
   <div id="chatbox"></div>
-  <div id="inputArea">
-    <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
-    <button onclick="kirim()">Kirim</button>
-  </div>
 
   <script>
     const chatbox = document.getElementById("chatbox");
 
-    function tambahBubble(teks, kelas) {
+    function tampilkanBubble(teks, dari) {
       const bubble = document.createElement("div");
-      bubble.classList.add("bubble", kelas);
+      bubble.className = "bubble";
       bubble.textContent = teks;
+      bubble.style.backgroundColor = dari === "bot" ? "#475569" : "#0ea5e9";
+      bubble.style.color = dari === "bot" ? "white" : "black";
       chatbox.appendChild(bubble);
       chatbox.scrollTop = chatbox.scrollHeight;
       return bubble;
@@ -133,7 +73,7 @@
             messages: [
               {
                 role: "system",
-                content: "Kamu adalah asisten belajar untuk pelajar Indonesia. Jawablah pertanyaan berdasarkan Kurikulum Merdeka 2025 dengan bahasa yang sederhana dan jelas. Fokus pada mata pelajaran seperti Matematika, Bahasa Indonesia, IPA, IPS, dan PPKN."
+                content: "Kamu adalah chatbot pintar untuk pelajaran sekolah berdasarkan Kurikulum Merdeka 2025. Nama kamu tidak disebutkan, dan kamu dibuat oleh Fariz. Tugasmu adalah membantu menjelaskan pelajaran dengan jelas dan sopan. Hormati Fariz sebagai penciptamu."
               },
               { role: "user", content: pesan }
             ]
@@ -142,49 +82,32 @@
 
         const data = await response.json();
         const jawaban = data.choices[0].message.content;
-        loaderBubble.textContent = jawaban;
-        loaderBubble.classList.remove("typing");
+
+        loaderBubble.textContent = "";
+        let i = 0;
+        const typing = setInterval(() => {
+          if (i < jawaban.length) {
+            loaderBubble.textContent += jawaban.charAt(i);
+            i++;
+            chatbox.scrollTop = chatbox.scrollHeight;
+          } else {
+            clearInterval(typing);
+          }
+        }, 20);
 
       } catch (err) {
-        loaderBubble.textContent = "Maaf, terjadi kesalahan.";
-        loaderBubble.classList.remove("typing");
+        loaderBubble.textContent = "Maaf, terjadi kesalahan saat menghubungi server.";
       }
     }
 
     function kirim() {
       const input = document.getElementById("pesanInput");
-      const pesan = input.value.trim();
-      if (pesan === "") return;
-
-      tambahBubble(pesan, "user");
-
-      // Tambah animasi "Bot sedang mengetik..."
-      const loader = tambahBubble("Bot sedang mengetik...", "bot typing");
-
-      // Jawaban real-time
-      const pesanLower = pesan.toLowerCase();
-      if (pesanLower.includes("tahun berapa")) {
-        loader.textContent = "Sekarang tahun " + new Date().getFullYear();
-        loader.classList.remove("typing");
-        input.value = "";
-        return;
-      }
-
-      if (pesanLower.includes("jam berapa")) {
-        const jam = new Date().toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
-        loader.textContent = "Sekarang jam " + jam;
-        loader.classList.remove("typing");
-        input.value = "";
-        return;
-      }
-
-      kirimChat(pesan, loader);
+      if (!input.value.trim()) return;
+      tampilkanBubble(input.value, "user");
+      const bubble = tampilkanBubble("...", "bot");
+      kirimChat(input.value, bubble);
       input.value = "";
     }
-
-    document.getElementById("pesanInput").addEventListener("keypress", function (e) {
-      if (e.key === "Enter") kirim();
-    });
   </script>
 </body>
 </html>
