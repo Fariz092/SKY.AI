@@ -1,143 +1,145 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SKY.AI - Chatbot Pelajaran</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Nunito', sans-serif;
-      background-color: #111;
-      color: #fff;
+      font-family: 'Inter', sans-serif;
+      background-color: #0f0f0f;
+      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
     }
     header {
       text-align: center;
-      padding: 20px;
+      margin-bottom: 20px;
     }
     header img {
-      width: 100px;
+      width: 80px;
       height: auto;
+      display: block;
+      margin: 0 auto 10px;
     }
-    h1 {
-      font-size: 1.5em;
-      margin: 10px 0 0;
+    header h1 {
+      margin: 0;
+      font-size: 24px;
     }
     #chat {
-      width: 90%;
+      width: 100%;
       max-width: 600px;
       height: 70vh;
       overflow-y: auto;
-      background-color: #222;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px;
+      background: #1c1c1c;
     }
     .message {
       margin: 10px 0;
-      line-height: 1.5;
-    }
-    .bot {
-      color: #00ffd5;
+      padding: 10px;
+      border-radius: 5px;
     }
     .user {
-      color: #fff;
-      text-align: right;
+      background-color: #2d2dff;
+      align-self: flex-end;
     }
-    form {
+    .bot {
+      background-color: #333;
+      align-self: flex-start;
+    }
+    #form {
       display: flex;
-      width: 90%;
+      gap: 10px;
+      margin-top: 20px;
+      width: 100%;
       max-width: 600px;
-      margin-bottom: 30px;
     }
-    input {
+    input[type="text"] {
       flex: 1;
       padding: 10px;
-      font-size: 1em;
+      border-radius: 5px;
       border: none;
-      border-radius: 10px 0 0 10px;
     }
     button {
       padding: 10px 20px;
-      font-size: 1em;
-      background-color: #00ffd5;
-      color: #000;
+      border-radius: 5px;
       border: none;
-      border-radius: 0 10px 10px 0;
+      background-color: #2d2dff;
+      color: white;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="Logo SKY.AI" />
-    <h1>SKY.AI - Teman Belajar Kamu</h1>
-  </header>
-  <div id="chat"></div>
-  <form id="form">
-    <input type="text" id="input" placeholder="Tanyakan apapun seputar pelajaran..." required />
+    <img src="logo.png" alt="Logo SKY.AI">
+    <h1>SKY.AI</h1>
+    <p>Chatbot Pelajaran Kurikulum 2025 - Teman Belajarmu</p>
+  </header>  <div id="chat"></div>  <form id="form">
+    <input type="text" id="input" placeholder="Tanya apa aja tentang pelajaran..." required />
     <button type="submit">Kirim</button>
-  </form>
-
-  <script>
-    const apiKey = "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";
-    const apiURL = "https://openrouter.ai/api/v1/chat/completions";
-
+  </form>  <script>
+    const chat = document.getElementById("chat");
     const form = document.getElementById("form");
     const input = document.getElementById("input");
-    const chat = document.getElementById("chat");
+
+    const apiKey = "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";
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const pesan = input.value.trim();
-      if (!pesan) return;
-      appendMessage("Kamu", pesan, "user");
+      const pesan = input.value;
       input.value = "";
+      appendMessage("Kamu", pesan, "user");
+      appendMessage("SKY.AI", "Mengetik...", "bot", true);
 
       try {
-        const response = await fetch(apiURL, {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
+            "Authorization": `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            model: "anthropic/claude-3-haiku",
+            model: "openchat/openchat-7b",
             messages: [
-              {
-                role: "system",
-                content: "Kamu adalah chatbot pelajaran Indonesia yang ramah dan santai. Jawablah dengan bahasa santai tapi tetap informatif sesuai kurikulum 2025."
-              },
-              {
-                role: "user",
-                content: pesan
-              }
+              { role: "system", content: "Kamu adalah chatbot pelajaran Indonesia yang ramah dan santai. Jawablah dengan bahasa santai tapi tetap informatif sesuai kurikulum 2025." },
+              { role: "user", content: pesan }
             ]
           })
         });
 
         const data = await response.json();
-        if (data.choices && data.choices.length > 0) {
+        hapusKetik();
+
+        if (data.choices && data.choices[0]) {
           appendMessage("SKY.AI", data.choices[0].message.content, "bot");
         } else {
           appendMessage("SKY.AI", "Maaf, terjadi kesalahan.", "bot");
         }
       } catch (error) {
+        hapusKetik();
         appendMessage("SKY.AI", "Maaf, terjadi kesalahan koneksi.", "bot");
       }
     });
 
-    function appendMessage(sender, text, className) {
+    function appendMessage(sender, text, className, isTyping = false) {
       const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${className}`;
-      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      messageDiv.className = "message " + className;
+      messageDiv.innerHTML = `<strong>${sender}:</strong> <span>${text}</span>`;
+      if (isTyping) messageDiv.id = "typing";
       chat.appendChild(messageDiv);
       chat.scrollTop = chat.scrollHeight;
     }
-  </script>
-</body>
+
+    function hapusKetik() {
+      const typing = document.getElementById("typing");
+      if (typing) typing.remove();
+    }
+  </script></body>
 </html>
