@@ -1,89 +1,61 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SKY.AI Chatbot</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: #fff;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-    }
-    .title {
-      font-size: 2em;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .chat-box {
-      background-color: #1e1e1e;
-      border-radius: 12px;
-      padding: 20px;
-      height: 400px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-    .input-box {
-      display: flex;
-      gap: 10px;
-    }
-    input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-    }
-    button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      background-color: #00bcd4;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatbot Indonesia</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container">
-    <div class="title">SKY.AI - Chatbot Pelajaran</div>
-    <div class="chat-box" id="chatBox"></div>
-    <div class="input-box">
-      <input type="text" id="userInput" placeholder="Tanya pelajaran...">
-      <button onclick="sendMessage()">Kirim</button>
-    </div>
+<body class="bg-gray-900 text-white">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 p-4 hidden md:block">
+      <h2 class="text-xl font-bold mb-4">Mata Pelajaran</h2>
+      <ul class="space-y-2">
+        <li><button class="w-full text-left hover:text-yellow-400">Matematika</button></li>
+        <li><button class="w-full text-left hover:text-yellow-400">IPA</button></li>
+        <li><button class="w-full text-left hover:text-yellow-400">Bahasa Indonesia</button></li>
+        <li><button class="w-full text-left hover:text-yellow-400">Bahasa Inggris</button></li>
+        <li><button class="w-full text-left hover:text-yellow-400">PPKN</button></li>
+      </ul>
+    </aside><!-- Main Chat Area -->
+<main class="flex-1 flex flex-col">
+  <!-- Header -->
+  <header class="bg-gray-800 p-4 text-xl font-semibold text-center">
+    SKY.AI - Chatbot Indonesia
+  </header>
+
+  <!-- Chat messages -->
+  <div id="chat-box" class="flex-1 p-4 space-y-4 overflow-y-auto">
+    <!-- Chat akan ditampilkan di sini -->
   </div>
 
-  <script>
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const chatBox = document.getElementById("chatBox");
-      const userMessage = input.value.trim();
-      if (!userMessage) return;
+  <!-- Chat input -->
+  <form id="chat-form" class="bg-gray-800 p-4 flex">
+    <input id="user-input" type="text" placeholder="Tanyakan apa saja..." class="flex-1 px-4 py-2 rounded-l bg-gray-700 text-white focus:outline-none" />
+    <button type="submit" class="bg-yellow-500 px-4 py-2 rounded-r text-black font-bold hover:bg-yellow-400">Kirim</button>
+  </form>
+</main>
 
-      chatBox.innerHTML += `<p><b>Kamu:</b> ${userMessage}</p>`;
-      input.value = "";
+  </div>  <script>
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const chatBox = document.getElementById('chat-box');
 
-      const res = await fetch("https://api.cohere.ai/v1/chat", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer HAE2u24oT5w0v7mr6d8tbHmNETZyoMvbONgHav7S",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: userMessage, chat_history: [] })
-      });
+    chatForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userText = userInput.value.trim();
+      if (!userText) return;
 
-      const data = await res.json();
-      chatBox.innerHTML += `<p><b>Bot:</b> ${data.text || 'Maaf, tidak bisa menjawab.'}</p>`;
+      // Tampilkan pesan user
+      chatBox.innerHTML += `<div class='text-right'><div class='inline-block bg-yellow-600 px-4 py-2 rounded-lg mb-2'>${userText}</div></div>`;
+      userInput.value = '';
       chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
-</body>
+
+      // Simulasi respon bot (gantikan dengan API call nanti)
+      setTimeout(() => {
+        chatBox.innerHTML += `<div class='text-left'><div class='inline-block bg-gray-700 px-4 py-2 rounded-lg mb-2'>Ini jawaban dari SKY.AI</div></div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 800);
+    });
+  </script></body>
 </html>
