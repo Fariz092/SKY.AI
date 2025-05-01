@@ -3,97 +3,132 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SKY.AI - Chatbot Pelajaran</title>
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    * { box-sizing: border-box; }
     body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', sans-serif;
       background-color: #0f172a;
-      color: white;
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 20px;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
-    input, button, select {
-      padding: 10px;
-      margin: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
+    header {
+      background-color: #1e293b;
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
     }
     #chatbox {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
       margin-top: 20px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
+      background-color: #1e293b;
+      border-radius: 10px;
+      padding: 20px;
       overflow-y: auto;
-      max-height: 500px;
+      height: 60vh;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
-    .bot {
-      color: #38bdf8;
+    .pesan {
       margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 80%;
+      word-wrap: break-word;
+      animation: fadeIn 0.3s ease-in-out;
     }
     .user {
-      color: #facc15;
-      margin: 10px 0;
+      background-color: #2563eb;
+      align-self: flex-end;
+      text-align: right;
     }
-    #loading {
-      font-style: italic;
-      color: gray;
+    .bot {
+      background-color: #334155;
+      align-self: flex-start;
     }
-    #resetBtn {
-      background-color: #ef4444;
+    #formInput {
+      margin: 20px;
+      width: 90%;
+      max-width: 600px;
+      display: flex;
+      gap: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #22c55e;
       color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-    footer {
-      margin-top: 30px;
-      color: #94a3b8;
-      font-size: 14px;
+    button:hover {
+      background-color: #16a34a;
+    }
+    .typing {
+      font-style: italic;
+      opacity: 0.7;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" alt="Bendera Indonesia" width="50" />
-  <h1>SKY.AI</h1>  <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
-  <button onclick="kirim()">Kirim</button>
-  <button id="resetBtn" onclick="resetChat()">Reset</button>  <div id="chatbox"></div>
-  <div id="loading"></div>  <script>
-    const chatbox = document.getElementById("chatbox");
-    const loading = document.getElementById("loading");
+  <header>
+    <h1>SKY.AI - Chatbot Pelajaran</h1>
+  </header>  <div id="chatbox"></div>  <div id="formInput">
+    <input type="text" id="pesanInput" placeholder="Tanyakan sesuatu..." autofocus />
+    <button onclick="kirim()">Kirim</button>
+  </div>  <script>
+    const API_KEY = "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";
 
     function tampilkanPesan(teks, pengirim) {
-      const elemen = document.createElement("p");
-      elemen.className = pengirim;
-      chatbox.appendChild(elemen);
-      animasiKetik(teks, elemen);
-    }
-
-    function animasiKetik(teks, elemen) {
-      let i = 0;
-      const interval = setInterval(() => {
-        elemen.textContent += teks.charAt(i);
-        i++;
-        if (i >= teks.length) clearInterval(interval);
-      }, 20);
+      const box = document.getElementById("chatbox");
+      const div = document.createElement("div");
+      div.classList.add("pesan", pengirim);
+      div.innerHTML = teks;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
     }
 
     function tampilkanAnimasiKetik() {
-      loading.textContent = "Bot sedang mengetik...";
+      const box = document.getElementById("chatbox");
+      const animasi = document.createElement("div");
+      animasi.classList.add("pesan", "bot", "typing");
+      animasi.id = "typingAnimasi";
+      animasi.innerText = "Sedang mengetik...";
+      box.appendChild(animasi);
+      box.scrollTop = box.scrollHeight;
     }
 
     function hapusAnimasiKetik() {
-      loading.textContent = "";
-    }
-
-    function resetChat() {
-      chatbox.innerHTML = "";
+      const animasi = document.getElementById("typingAnimasi");
+      if (animasi) animasi.remove();
     }
 
     async function kirim() {
       const input = document.getElementById("pesanInput");
-      const pesan = input.value;
+      const pesan = input.value.trim();
       if (!pesan) return;
       tampilkanPesan(pesan, "user");
       input.value = "";
@@ -103,16 +138,22 @@
         const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
-            "Authorization": "Bearer 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",
+            "Authorization": `Bearer ${API_KEY}`,
             "Content-Type": "application/json",
             "HTTP-Referer": "https://github.com/Fariz092",
-            "X-Title": "SKY.AI"
+            "X-Title": "SKY.AI Chatbot"
           },
           body: JSON.stringify({
-            model: "openchat/openchat-7b",
+            model: "openai/gpt-3.5-turbo",
             messages: [
-              { role: "system", content: "Kamu adalah chatbot pelajaran Indonesia yang ramah dan santai. Jawablah dengan bahasa santai tapi tetap informatif sesuai kurikulum 2025." },
-              { role: "user", content: pesan }
+              {
+                role: "system",
+                content: "Kamu adalah chatbot pelajaran Indonesia yang ramah dan santai. Jawablah dengan bahasa santai tapi tetap informatif sesuai kurikulum 2025."
+              },
+              {
+                role: "user",
+                content: pesan
+              }
             ]
           })
         });
@@ -129,8 +170,5 @@
         tampilkanPesan("Gagal terhubung ke server. Coba lagi nanti.", "bot");
       }
     }
-  </script>  <footer>
-    SKY.AI &copy; 2025 - Dibuat oleh Fariz092 | Powered by OpenRouter
-  </footer>
-</body>
+  </script></body>
 </html>
