@@ -1,83 +1,136 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SKY.AI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap" rel="stylesheet">
   <style>
+    @font-face {
+      font-family: 'AscenderSansBold';
+      src: url('https://fonts.cdnfonts.com/s/59168/Ascender-Sans-W01-Bold.woff') format('woff');
+    }
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Open Sans', sans-serif;
       background-color: #000;
       color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-    }
-    header {
-      width: 100%;
+      font-family: 'AscenderSansBold', sans-serif;
+      text-align: center;
       padding: 20px;
+    }
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #000;
-      box-sizing: border-box;
+      margin-bottom: 40px;
     }
-    .logo {
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-    .flag {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .flag img {
+    .bendera {
       width: 25px;
       height: 25px;
       border-radius: 50%;
+      border: 2px solid white;
     }
-    h1 {
-      margin-top: 40px;
-      font-size: 3em;
+    .judul {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
-    h2 {
-      margin-top: 10px;
-      font-size: 1.5em;
-      font-weight: normal;
-    }
-    .credit {
-      margin-top: 10px;
-      font-size: 1.2em;
-      color: #ccc;
+    .deskripsi {
+      font-size: 18px;
+      margin-bottom: 20px;
     }
     #chatbox {
-      background: #444;
-      padding: 30px;
+      background: #3a3a3a;
+      padding: 20px;
       border-radius: 20px;
-      margin-top: 30px;
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      min-height: 100px;
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+    #typing {
+      font-style: italic;
+      color: #aaa;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">SKY.AI</div>
-    <div class="flag">
-      <span>IDN</span>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" alt="Indonesia Flag">
+  <div class="header">
+    <div style="font-size: 24px;">SKY.AI</div>
+    <div>
+      IDN <img class="bendera" src="https://flagcdn.com/w40/id.png" alt="ID" />
     </div>
-  </header>  <h1>SKY.AI</h1>
-  <h2>Selamat Datang Di AI Kami.</h2>
-  <div class="credit">@Fariz092</div>  <div id="chatbox">
-    <strong>Ada Yang Bisa Saya Bantu?</strong>
   </div>
+
+  <div class="judul">SKY.AI</div>
+  <div class="deskripsi">Selamat Datang Di AI Kami.<br />@Fariz092</div>
+
+  <div id="chatbox">Ada Yang Bisa Saya Bantu?</div>
+  <div id="typing"></div>
+
+  <input type="text" id="pesanInput" placeholder="Tanya sesuatu..." />
+  <button onclick="kirim()">Kirim</button>
+
+  <script>
+    function tampilkanJawaban(teks) {
+      const box = document.getElementById("chatbox");
+      box.innerHTML = teks;
+    }
+
+    function animasiNgetik() {
+      const typing = document.getElementById("typing");
+      typing.innerHTML = "Bot sedang mengetik";
+      let titik = 0;
+      const interval = setInterval(() => {
+        titik = (titik + 1) % 4;
+        typing.innerHTML = "Bot sedang mengetik" + ".".repeat(titik);
+      }, 400);
+      return interval;
+    }
+
+    async function kirimChat(pesan) {
+      const typingInterval = animasiNgetik();
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer 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",
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://github.com/Fariz092", 
+          "X-Title": "SKY.AI"
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "Kamu adalah asisten pelajaran Indonesia buatan Fariz092." },
+            { role: "user", content: pesan }
+          ]
+        })
+      });
+
+      clearInterval(typingInterval);
+      document.getElementById("typing").innerHTML = "";
+
+      const data = await response.json();
+      if (data.choices && data.choices.length > 0) {
+        tampilkanJawaban(data.choices[0].message.content);
+      } else {
+        tampilkanJawaban("Maaf, terjadi kesalahan saat menjawab.");
+      }
+    }
+
+    function kirim() {
+      const input = document.getElementById("pesanInput");
+      if (input.value.trim() !== "") {
+        kirimChat(input.value.trim());
+        input.value = "";
+      }
+    }
+  </script>
 </body>
 </html>
