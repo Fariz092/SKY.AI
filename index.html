@@ -1,150 +1,150 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SKY.AI</title>
-  <link rel="icon" href="logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SKY.AI Chat</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
+      background-color: #000;
       color: #fff;
+      font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
       height: 100vh;
-    }header {
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  background-color: #1f1f1f;
-  width: 100%;
-  justify-content: center;
-}
+    }
 
-header img {
-  height: 40px;
-}
+    header {
+      background-color: #111;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-main {
-  flex: 1;
-  width: 100%;
-  max-width: 600px;
-  padding: 1rem;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
+    header .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-.message {
-  margin: 1rem 0;
-  padding: 1rem;
-  border-radius: 12px;
-  line-height: 1.5;
-  max-width: 90%;
-}
+    header img {
+      height: 30px;
+    }
 
-.message.user {
-  background-color: #333;
-  color: #fff;
-  align-self: flex-end;
-  text-align: right;
-}
+    #chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-.message.bot {
-  background-color: #1976d2;
-  color: #fff;
-  align-self: flex-start;
-  text-align: left;
-}
+    .msg.user {
+      align-self: flex-end;
+      background-color: #333;
+      padding: 10px 15px;
+      border-radius: 12px;
+      max-width: 80%;
+    }
 
-form {
-  display: flex;
-  width: 100%;
-  max-width: 600px;
-  padding: 1rem;
-  background-color: #1f1f1f;
-}
+    .msg.bot {
+      align-self: flex-start;
+      background-color: #007bff;
+      padding: 10px 15px;
+      border-radius: 12px;
+      max-width: 80%;
+    }
 
-input[type="text"] {
-  flex: 1;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  background-color: #2c2c2c;
-  color: #fff;
-}
+    #input-box {
+      display: flex;
+      padding: 10px;
+      background-color: #111;
+      border-top: 1px solid #222;
+    }
 
-button {
-  margin-left: 0.5rem;
-  padding: 0.75rem 1.2rem;
-  background-color: #1976d2;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    #input-box input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 20px;
+      margin-right: 10px;
+      background-color: #222;
+      color: #fff;
+    }
 
+    #input-box button {
+      background-color: #007bff;
+      border: none;
+      border-radius: 20px;
+      color: #fff;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    #input-box button:hover {
+      background-color: #005fcc;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="SKY.AI" />
+    <div class="title">SKY.AI</div>
+    <img src="logo.png" alt="Logo" />
   </header>
-  <main id="chat"></main>
-  <form id="form">
-    <input type="text" id="input" placeholder="Tanyakan sesuatu..." />
-    <button type="submit">Kirim</button>
-  </form>  <script>
-    const apiKey = "HAE2u24oT5w0v7mr6d8tbHmNETZyoMvbONgHav7S"; // Ganti dengan key Cohere kamu
-    const apiURL = "https://api.cohere.ai/v1/chat";
 
-    const form = document.getElementById("form");
-    const input = document.getElementById("input");
-    const chat = document.getElementById("chat");
+  <div id="chat-box">
+    <div class="msg bot">Halo! Ada yang bisa saya bantu hari ini?</div>
+  </div>
 
-    function appendMessage(sender, text, className) {
-      const div = document.createElement("div");
-      div.className = `message ${className}`;
-      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
-    }
+  <div id="input-box">
+    <input type="text" id="user-input" placeholder="Tulis pesan..." />
+    <button onclick="sendMessage()">Kirim</button>
+  </div>
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const pesan = input.value.trim();
-      if (!pesan) return;
+  <script>
+    const chatBox = document.getElementById('chat-box');
 
-      appendMessage("Kamu", pesan, "user");
-      input.value = "";
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      addMessage('user', message);
+      input.value = '';
 
       try {
-        const response = await fetch(apiURL, {
-          method: "POST",
+        const response = await fetch('https://api.openrouter.ai/v1/chat/completions', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
+            'Authorization': 'Bearer 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',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: "command-r",
-            message: pesan,
-          }),
+            model: 'openrouter/claude-3-haiku',
+            messages: [
+              { role: 'system', content: 'Kamu adalah asisten AI yang membantu pelajar Indonesia.' },
+              { role: 'user', content: message }
+            ]
+          })
         });
 
         const data = await response.json();
-        if (data && data.text) {
-          appendMessage("SKY.AI", data.text, "bot");
-        } else {
-          appendMessage("SKY.AI", "Maaf, saya tidak bisa menjawab.", "bot");
-        }
-      } catch (err) {
-        appendMessage("SKY.AI", "Terjadi kesalahan.", "bot");
+        const reply = data.choices?.[0]?.message?.content || 'Maaf, terjadi kesalahan.';
+        addMessage('bot', reply);
+      } catch (e) {
+        addMessage('bot', 'Maaf, terjadi kesalahan saat memproses.');
       }
-    });
-  </script></body>
+    }
+
+    function addMessage(sender, text) {
+      const msg = document.createElement('div');
+      msg.className = `msg ${sender}`;
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
 </html>
