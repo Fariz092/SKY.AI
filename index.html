@@ -1,130 +1,124 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SKY AI</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0d1117;
-      color: #e6edf3;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-color: #000; /* hitam pekat */
+      color: white;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      justify-content: center;
+      align-items: center;
     }
     header {
-      display: flex;
-      align-items: center;
-      padding: 1rem;
-      background-color: #161b22;
-      border-bottom: 1px solid #30363d;
+      text-align: center;
+      margin-bottom: 20px;
     }
     header img {
-      height: 40px;
-      margin-right: 1rem;
+      width: 120px;
+      height: auto;
     }
-    header h1 {
-      font-size: 1.5rem;
-      margin: 0;
-    }
-    #chat {
-      flex-grow: 1;
-      padding: 1rem;
+    #chat-container {
+      background-color: #111;
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 60vh;
       overflow-y: auto;
     }
     .message {
-      margin: 0.5rem 0;
-      padding: 0.75rem;
-      border-radius: 10px;
-      max-width: 80%;
+      margin: 10px 0;
     }
     .user {
-      background-color: #238636;
-      align-self: flex-end;
-      color: white;
+      text-align: right;
+      color: #4fc3f7;
     }
     .bot {
-      background-color: #21262d;
-      align-self: flex-start;
+      text-align: left;
+      color: #a5d6a7;
     }
-    #form {
+    #input-container {
+      margin-top: 20px;
       display: flex;
-      padding: 1rem;
-      background-color: #161b22;
-      border-top: 1px solid #30363d;
+      width: 90%;
+      max-width: 600px;
     }
-    #input {
-      flex-grow: 1;
-      padding: 0.5rem;
+    #input-container input {
+      flex: 1;
+      padding: 10px;
       border: none;
-      border-radius: 5px;
-      font-size: 1rem;
+      border-radius: 5px 0 0 5px;
     }
-    #submit {
-      margin-left: 0.5rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
+    #input-container button {
+      padding: 10px 20px;
       border: none;
-      border-radius: 5px;
-      background-color: #238636;
+      background-color: #333;
       color: white;
+      border-radius: 0 5px 5px 0;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo.png" alt="SKY AI Logo" />
-    <h1>SKY AI</h1>
+    <img src="logo.png" alt="SKY AI" />
   </header>
-  <div id="chat"></div>
-  <form id="form">
-    <input type="text" id="input" placeholder="Tanyakan sesuatu..." autocomplete="off" required />
-    <button type="submit" id="submit">Kirim</button>
-  </form>
+  <div id="chat-container"></div>
+  <div id="input-container">
+    <input type="text" id="user-input" placeholder="Tulis pertanyaanmu..." />
+    <button onclick="sendMessage()">Kirim</button>
+  </div>
+
   <script>
-    const form = document.getElementById('form');
-    const input = document.getElementById('input');
-    const chat = document.getElementById('chat');form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const text = input.value.trim();
-  if (!text) return;
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+      appendMessage("Kamu", message, "user");
+      input.value = "";
 
-  appendMessage('Kamu', text, 'user');
-  input.value = '';
-  try {
-    const response = await fetch("https://api.cohere.ai/v1/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ecVpVvRlg0lowsQNNGIBL5BuPi0kTkjjPe6G3eRs"
-      },
-      body: JSON.stringify({
-        message: text,
-        model: "command-r-plus",
-        temperature: 0.7
-      })
-    });
-    const data = await response.json();
-    if (data.text) {
-      appendMessage("SKY AI", data.text, "bot");
-    } else {
-      appendMessage("SKY AI", "Maaf, terjadi kesalahan.", "bot");
+      try {
+        const response = await fetch("https://api.cohere.ai/v1/chat", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer ecVpVvRlg0lowsQNNGIBL5BuPi0kTkjjPe6G3eRs",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "command-r-plus",
+            message: message
+          })
+        });
+
+        const data = await response.json();
+        const reply = data.text || "Maaf, terjadi kesalahan.";
+        appendMessage("SKY AI", reply, "bot");
+      } catch (error) {
+        appendMessage("SKY AI", "Maaf, tidak dapat terhubung.", "bot");
+      }
     }
-  } catch (err) {
-    appendMessage("SKY AI", "Maaf, gagal terhubung ke server.", "bot");
-  }
-});
 
-function appendMessage(sender, text, className) {
-  const msg = document.createElement('div');
-  msg.className = `message ${className}`;
-  msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-  chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
-}
-
+    function appendMessage(sender, text, className) {
+      const chat = document.getElementById("chat-container");
+      const msg = document.createElement("div");
+      msg.className = `message ${className}`;
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
   </script>
 </body>
 </html>
