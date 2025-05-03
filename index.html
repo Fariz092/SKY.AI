@@ -1,161 +1,160 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SKY.AI (IDN) </title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SKY.AI - Buatan Anak Keren</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quantify&display=swap">
   <style>
-    @font-face {
-      font-family: 'Quantify';
-      src: url('Quantify.ttf') format('truetype');
-    }
-
     body {
       margin: 0;
-      font-family: 'Quantify', sans-serif;
-      background-color: #000000;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #000;
       color: white;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      animation: fadeIn 2s ease;
+      animation: fadeIn 1.5s ease;
     }
 
     @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    .logo {
-      width: 100px;
-      animation: zoomIn 1.5s ease;
-    }
-
-    @keyframes zoomIn {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      margin-top: 10px;
-      animation: slowfade 4s ease;
-    }
-
-    @keyframes slowfade {
-      0% { opacity: 0; letter-spacing: 5px; }
-      100% { opacity: 1; letter-spacing: 1px; }
-    }
-
-    .chat-box {
-      background-color: #1a1a1a;
-      border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 700px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-      animation: fadeIn 1.2s ease;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 15px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      background-color: #2b2b2b;
-      color: white;
-      margin-bottom: 10px;
-    }
-
-    button {
-      padding: 10px 25px;
-      background-color: #00bcd4;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    #response {
-      margin-top: 20px;
-      white-space: pre-line;
-    }
-
-    .top-left {
-      position: absolute;
-      top: 10px;
-      left: 10px;
+    header {
       display: flex;
+      justify-content: space-between;
       align-items: center;
+      padding: 10px 30px;
     }
 
-    .bendera {
-      width: 32px;
-      height: 32px;
+    .flag {
+      width: 35px;
+      height: 35px;
       border-radius: 50%;
-      margin-right: 10px;
+      object-fit: cover;
       border: 2px solid white;
     }
 
-    .skyai-text {
+    .sky-title {
       font-family: 'Quantify', sans-serif;
-      font-size: 1.5rem;
-      animation: slowfade 3s ease;
+      font-size: 26px;
+      animation: slowGlow 2s infinite alternate;
+    }
+
+    @keyframes slowGlow {
+      0% { opacity: 0.7; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.08); }
+    }
+
+    main {
+      height: calc(100vh - 80px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-family: 'Quantify', sans-serif;
+      margin-bottom: 15px;
+    }
+
+    .chat-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+    }
+
+    .chat-input {
+      width: 100%;
+      border: none;
+      background: #111;
+      padding: 15px;
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      margin-top: 15px;
+    }
+
+    .chat-button {
+      margin-top: 10px;
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      background: cyan;
+      color: black;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .chat-button:hover {
+      background: #00ffffaa;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      font-size: 13px;
+      opacity: 0.5;
     }
   </style>
 </head>
 <body>
-  <div class="top-left">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" class="bendera" alt="IDN">
-    <div class="skyai-text">SkyAI (IDN)</div>
-  </div>
-
-  <img src="https://raw.githubusercontent.com/Fariz092/SKY.AI/main/logo.png" alt="SKY Logo" class="logo">
-  <h1>Welcome to SKY.AI </h1>
-
-  <div class="chat-box">
-    <input type="text" id="userInput" placeholder="Tanya aja gua pasti jawab ko...">
-    <button onclick="sendMessage()">Kirim</button>
-    <div id="response"></div>
-  </div>
+  <header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" alt="IDN" class="flag" />
+    <div class="sky-title">SkyAI</div>
+  </header>
+  <main>
+    <img src="logo.png" class="logo" alt="SKY.AI Logo" />
+    <h1>Welcome to SKY.AI Buatan Anak Keren</h1>
+    <div class="chat-box">
+      <textarea id="userInput" class="chat-input" placeholder="Tulis pertanyaan kamu..."></textarea>
+      <button onclick="sendMessage()" class="chat-button">Kirim</button>
+      <div id="chatResponse" style="margin-top:15px;"></div>
+    </div>
+  </main>
+  <footer>
+    SKY.AI © 2025 - Buatan Anak Indonesia
+  </footer>
 
   <script>
     async function sendMessage() {
-      const input = document.getElementById('userInput');
-      const responseBox = document.getElementById('response');
-      const question = input.value.trim();
-      if (!question) return;
-
-      responseBox.textContent = 'Menunggu jawaban...';
+      const input = document.getElementById("userInput").value;
+      if (!input.trim()) return;
+      const responseBox = document.getElementById("chatResponse");
+      responseBox.innerHTML = "Loading...";
 
       try {
         const res = await fetch("https://api.cohere.ai/v1/chat", {
           method: "POST",
           headers: {
-            "Authorization": "Bearer ecVpVvRlg0lowsQNNGIBL5BuPi0kTkjjPe6G3eRs",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer ecVpVvRlg0lowsQNNGIBL5BuPi0kTkjjPe6G3eRs"
           },
           body: JSON.stringify({
-            model: "command-r-plus",
-            message: question
+            message: input,
+            chat_history: []
           })
         });
 
         const data = await res.json();
-        const aiReply = data.text || "Tidak ada jawaban.";
-        responseBox.textContent = aiReply;
-
+        responseBox.innerHTML = `<strong>Jawaban:</strong> ${data.text || 'Tidak ada respon.'}`;
       } catch (err) {
-        responseBox.textContent = "Terjadi kesalahan saat memproses.";
-        console.error(err);
+        responseBox.innerHTML = "Terjadi kesalahan. Coba lagi.";
       }
     }
   </script>
 </body>
-  </html>
+</html>
