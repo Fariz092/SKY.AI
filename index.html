@@ -1,163 +1,143 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SKY.AI - Buatan Anak Keren</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quantify&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Quantify', sans-serif;
     }
+
     body {
+      font-family: 'Quantify', sans-serif;
       background-color: #000;
       color: white;
       height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      background-image: url('logo.png');
-      background-repeat: no-repeat;
-      background-position: center top;
-      background-size: 150px;
-      animation: fadeIn 2s ease-in-out;
+      justify-content: center;
+      animation: fadeIn 1.2s ease-in-out;
     }
-    header {
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 10px;
+      animation: bounceIn 1s ease;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      60% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
       text-align: center;
-      margin-bottom: 20px;
-      animation: fadeDown 1s ease-in-out;
     }
-    header h1 {
-      font-size: 2.2rem;
-    }
+
     .flag {
-      width: 30px;
-      position: absolute;
-      top: 20px;
-      right: 20px;
+      width: 40px;
+      margin-top: 4px;
     }
+
     .chat-container {
-      width: 90%;
-      max-width: 500px;
-      background-color: #111;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.1);
+      margin-top: 30px;
+      background: #111;
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 600px;
+      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      animation: fadeUp 1s ease-in-out;
+      gap: 15px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     }
-    #chat {
-      height: 300px;
-      overflow-y: auto;
-      padding: 10px;
-      background-color: #222;
-      border-radius: 8px;
-    }
-    .message {
-      margin-bottom: 10px;
-    }
-    .bot {
-      color: #0ff;
-    }
-    .user {
-      color: #0f0;
-      text-align: right;
-    }
-    form {
+
+    .input-area {
       display: flex;
+      align-items: center;
       gap: 10px;
-    }
-    input[type="text"] {
-      flex: 1;
+      background: #1a1a1a;
+      border-radius: 15px;
       padding: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      background-color: #333;
-      color: white;
     }
-    button {
-      padding: 10px 15px;
+
+    .input-area input {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
       border: none;
-      background-color: #0ff;
-      color: black;
-      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+    }
+
+    .input-area button {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
       cursor: pointer;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes fadeDown {
-      from { transform: translateY(-50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    @keyframes fadeUp {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+
+    .input-area button:hover {
+      background: #555;
     }
   </style>
 </head>
 <body>
-  <img src="https://flagcdn.com/id.svg" class="flag" alt="IDN Flag">
-  <header>
-    <h1>Welcome to SKY.AI Buatan Anak Keren</h1>
-  </header>
+  <img src="https://raw.githubusercontent.com/Fariz092/SKY.AI/main/logo.png" alt="SKY.AI Logo" class="logo" />
+  <h1>Welcome to SKY.AI Buatan Anak Keren</h1>
+  <img src="https://flagcdn.com/w40/id.png" alt="Indonesia Flag" class="flag" />
+
   <div class="chat-container">
-    <div id="chat"></div>
-    <form id="chat-form">
-      <input type="text" id="user-input" placeholder="Tulis pertanyaan di sini..." required />
-      <button type="submit">Kirim</button>
-    </form>
-  </div>  <script>
-    const API_KEY = "ecVpVvRlg0lowsQNNGIBL5BuPi0kTkjjPe6G3eRs";
+    <div class="input-area">
+      <input type="text" placeholder="Tulis pertanyaan kamu di sini..." id="userInput" />
+      <button onclick="sendMessage()">Kirim</button>
+    </div>
+    <div id="responseArea"></div>
+  </div>
 
-    document.getElementById("chat-form").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const input = document.getElementById("user-input");
-      const userText = input.value;
-      appendMessage("Kamu", userText, "user");
-      input.value = "";
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const responseArea = document.getElementById("responseArea");
+      const question = input.value.trim();
+      if (!question) return;
 
+      responseArea.innerHTML = "Sedang menjawab...";
       try {
-        const res = await fetch("https://api.cohere.ai/v1/chat", {
+        const response = await fetch("https://api.cohere.ai/v1/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${API_KEY}`
+            "Authorization": "Bearer ecVpVvRlg0lowsQNNGIBL5BuPi0kTkjjPe6G3eRs"
           },
           body: JSON.stringify({
             model: "command-r",
-            message: userText,
-            temperature: 0.7
+            message: question
           })
         });
-
-        const data = await res.json();
-        if (data.text) {
-          appendMessage("SKY.AI", data.text, "bot");
-        } else {
-          appendMessage("SKY.AI", "Maaf, terjadi kesalahan.", "bot");
-        }
+        const data = await response.json();
+        responseArea.innerHTML = `<p>${data.text || "Gagal menjawab. Coba lagi."}</p>`;
       } catch (error) {
-        appendMessage("SKY.AI", "Maaf, koneksi gagal.", "bot");
+        responseArea.innerHTML = "<p>Terjadi kesalahan. Silakan coba lagi.</p>";
       }
-    });
-
-    function appendMessage(sender, text, className) {
-      const chat = document.getElementById("chat");
-      const message = document.createElement("div");
-      message.className = `message ${className}`;
-      message.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chat.appendChild(message);
-      chat.scrollTop = chat.scrollHeight;
     }
-  </script></body>
+  </script>
+</body>
 </html>
