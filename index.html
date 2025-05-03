@@ -1,141 +1,218 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SKY.AI</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0f0f0f;
-      color: #f1f1f1;
-    }
-    header {
-      background-color: #1a1a1a;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #ffffff;
-    }
-    #chat {
-      max-width: 700px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: #1e1e1e;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
-      overflow-y: auto;
-      height: 60vh;
-    }
-    .message {
-      margin-bottom: 15px;
-      line-height: 1.6;
-    }
-    .bot {
-      color: #00c853;
-    }
-    .user {
-      text-align: right;
-      color: #42a5f5;
-    }
-    #form {
-      max-width: 700px;
-      margin: 10px auto;
-      display: flex;
-      padding: 10px;
-    }
-    #input {
-      flex-grow: 1;
-      padding: 10px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 5px 0 0 5px;
-    }
-    button {
-      padding: 10px;
-      font-size: 1rem;
-      border: none;
-      background-color: #00c853;
-      color: white;
-      border-radius: 0 5px 5px 0;
-      cursor: pointer;
-    }
-    footer {
-      text-align: center;
-      color: #777;
-      font-size: 0.8rem;
-      padding: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LyukovAI - Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* CSS untuk tampilan dark mode dan desain modern */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+        }
+
+        .header {
+            padding: 20px;
+            background-color: #1f1f1f;
+            text-align: center;
+            border-bottom: 2px solid #333;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: #00bcd4;
+        }
+
+        .chat-box {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 2px solid #333;
+        }
+
+        .user-message, .ai-message {
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background-color: #00bcd4;
+            color: #fff;
+            align-self: flex-end;
+        }
+
+        .ai-message {
+            background-color: #333;
+            color: #fff;
+            align-self: flex-start;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 10px;
+            background-color: #1f1f1f;
+            border-top: 2px solid #333;
+        }
+
+        .input-area input {
+            width: 90%;
+            padding: 10px;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .input-area button {
+            background-color: #00bcd4;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-left: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .input-area button:hover {
+            background-color: #0097a7;
+        }
+
+        .acknowledgment {
+            font-size: 0.9em;
+            color: #888;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        /* Animasi mengetik */
+        .typing {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+        }
+
+        .typing span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 6px;
+            background-color: #00bcd4;
+            border-radius: 50%;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes typing {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>SKY.AI - Teman Belajar Pintar</header>
-  <div id="chat"></div>
-  <form id="form">
-    <input type="text" id="input" placeholder="Tanyakan sesuatu..." required autocomplete="off" />
-    <button type="submit">Kirim</button>
-  </form>
-  <footer>Dibuat dengan semangat oleh sang pencipta, Fariz</footer>
+    <div class="container">
+        <div class="header">
+            <h1>LyukovAI - Chatbot</h1>
+        </div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Tanya apa saja!" />
+            <button onclick="sendMessage()">Kirim</button>
+        </div>
+        <div class="acknowledgment">AI ini dikembangkan oleh [Muhammad Fariz], menggunakan teknologi dari Cohere.</div>
+    </div>
 
-  <script>
-    const apiKey = "HAE2u24oT5w0v7mr6d8tbHmNETZyoMvbONgHav7S";
-    const model = "command-r-plus";
+    <script>
+        const API_KEY = 'HAE2u24oT5w0v7mr6d8tbHmNETZyoMvbONgHav7S';  // Ganti dengan API key dari Cohere
+        const chatBox = document.getElementById('chat-box');
+        let typingElement;
 
-    const chat = document.getElementById("chat");
-    const form = document.getElementById("form");
-    const input = document.getElementById("input");
+        // Fungsi untuk menampilkan pesan di chat
+        function displayMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(isUser ? 'user-message' : 'ai-message');
+            messageDiv.innerText = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll ke bawah setelah pesan ditambahkan
+        }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const userInput = input.value.trim();
-      if (!userInput) return;
+        // Fungsi untuk menampilkan animasi mengetik
+        function showTypingAnimation() {
+            typingElement = document.createElement('div');
+            typingElement.classList.add('typing');
+            typingElement.innerHTML = `<span></span><span></span><span></span>`;
+            chatBox.appendChild(typingElement);
+        }
 
-      appendMessage("Kamu", userInput, "user");
-      input.value = "";
+        // Fungsi untuk menghapus animasi mengetik
+        function hideTypingAnimation() {
+            if (typingElement) {
+                typingElement.remove();
+            }
+        }
 
-      appendMessage("AI", "Mengetik...", "bot", true);
+        // Fungsi untuk mengirim pesan dan mendapatkan respons dari AI
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value.trim();
+            if (userInput === '') return;
 
-      try {
-        const response = await fetch("https://api.cohere.ai/v1/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-          },
-          body: JSON.stringify({
-            model: model,
-            chat_history: [],
-            message: userInput,
-            prompt_truncation: "AUTO",
-          }),
-        });
+            // Tampilkan pesan pengguna
+            displayMessage(userInput, true);
 
-        const data = await response.json();
-        const botReply = data.text || "Maaf, terjadi kesalahan.";
+            // Tampilkan animasi mengetik AI
+            showTypingAnimation();
 
-        removeLastMessage();
-        appendMessage("AI", botReply, "bot");
-      } catch (error) {
-        removeLastMessage();
-        appendMessage("AI", "Maaf, terjadi kesalahan koneksi.", "bot");
-      }
-    });
+            // Kirim permintaan ke API Cohere
+            const response = await fetch('https://api.cohere.ai/v1/generate', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    model: 'command-xlarge-nightly', // Model Cohere yang digunakan
+                    prompt: `Kamu adalah AI yang dibuat oleh [M.Fariz]. Jika ada pertanyaan tentang siapa yang membuatmu, jawab dengan informasi ini: "Aku dibuat oleh [Fariz], menggunakan teknologi dari Cohere."`,
+                    max_tokens: 100,
+                    temperature: 0.7,
+                    stop_sequences: ["\n"]
+                }),
+            });
 
-    function appendMessage(sender, text, className, isTemp = false) {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = "message " + className;
-      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      if (isTemp) messageDiv.id = "typing";
-      chat.appendChild(messageDiv);
-      chat.scrollTop = chat.scrollHeight;
-    }
+            const data = await response.json();
+            const aiResponse = data.generations[0].text.trim();
 
-    function removeLastMessage() {
-      const typing = document.getElementById("typing");
-      if (typing) chat.removeChild(typing);
-    }
-  </script>
+            // Sembunyikan animasi mengetik
+            hideTypingAnimation();
+
+            // Tampilkan respons AI
+            displayMessage(aiResponse);
+        }
+    </script>
 </body>
-</html>
+  </html>
