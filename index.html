@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LyukovAI - Chatbot</title>
+    <title>SkyAI - Chatbot</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* CSS untuk tampilan dark mode dan desain modern */
@@ -138,7 +138,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>LyukovAI - Chatbot</h1>
+            <h1>SkyAI - Chatbot</h1>
         </div>
         <div class="chat-box" id="chat-box"></div>
         <div class="input-area">
@@ -196,7 +196,7 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    model: 'command-xlarge-nightly', // Model Cohere yang digunakan
+                    model: 'command-r-plus', // Model Cohere yang digunakan
                     prompt: `Kamu adalah AI yang dibuat oleh [M.Fariz]. Jika ada pertanyaan tentang siapa yang membuatmu, jawab dengan informasi ini: "Aku dibuat oleh [Fariz], menggunakan teknologi dari Cohere."`,
                     max_tokens: 100,
                     temperature: 0.7,
